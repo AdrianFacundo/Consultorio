@@ -17,7 +17,14 @@ class CreateCitasTable extends Migration
             $table->foreignId('id_paciente_citas')->constrained('pacientes');
             $table->foreignId('id_servicio_citas')->constrained('servicios');
             $table->dateTime('fecha');
-            $table->text('observaciones')->nullable();
+            $table->float('peso')->nullable(); 
+            $table->float('estatura')->nullable(); 
+            $table->float('temperatura')->nullable(); 
+            $table->integer('frecuencia_cardiaca')->nullable(); 
+            $table->string('tension')->nullable(); 
+            $table->text('motivo_consulta')->nullable(); 
+            $table->text('observaciones')->nullable(); 
+            $table->text('diagnostico')->nullable();
             $table->timestamps();
         });
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Patient;
+use App\Models\Servicio;
 
 class PatientController extends Controller
 {
@@ -11,10 +12,12 @@ class PatientController extends Controller
     {
         if (auth()->user()->tipo === 'secretaria') {
             $pacientes = Patient::all();
-            return view('secretaria.pacientes', compact('pacientes'));
+            $servicios = Servicio::all();
+            return view('secretaria.pacientes', compact('pacientes','servicios'));
         } elseif (auth()->user()->tipo === 'doctor') {
             $pacientes = Patient::all();
-            return view('doctor.pacientes', compact('pacientes'));
+            $servicios = Servicio::all();
+            return view('doctor.pacientes', compact('pacientes','servicios'));
         }
          
     }
@@ -45,6 +48,27 @@ class PatientController extends Controller
             $patient->delete();
             return redirect()->route('patients.create')->with('success', 'Paciente eliminado exitosamente.');
         }
+        return redirect()->route('patients.create')->with('error', 'Paciente no encontrado.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'birthdate' => 'required|date',
+            'sex' => 'required|string|in:Masculino,Femenino',
+            'phone' => 'required|string|max:15',
+        ]);
+
+        $patient = Patient::find($id);
+        if ($patient) {
+            $patient->fecha_nacimiento = $request->birthdate;
+            $patient->genero = $request->sex;
+            $patient->telefono = $request->phone;
+            $patient->save();
+
+            return redirect()->route('patients.create')->with('success', 'Paciente actualizado exitosamente.');
+        }
+
         return redirect()->route('patients.create')->with('error', 'Paciente no encontrado.');
     }
 

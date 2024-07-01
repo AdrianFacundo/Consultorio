@@ -12,7 +12,4 @@ class Medico extends Model
     protected $fillable = [
         'nombre', 'telefono', 'profesion', 'tipo', 'id_usuario_medicos',
     ];
-
-    // Si tienes una tabla con un nombre diferente al convencional, puedes definirla aquí:
-    // protected $table = 'nombre_de_tabla';
 }

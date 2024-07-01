@@ -6,15 +6,16 @@
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                        <img src="{{ asset('images/login.png') }}" alt="Logo" class="block h-12 w-25" />
                     </a>
                 </div>
-    
+
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     @auth
+                        <!-- Secretaria Navigation Links -->
                         @if (auth()->user()->tipo === 'secretaria')
-                            <!-- Secretaria Navigation Links -->
+                            
                             <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                                 {{ __('Dashboard') }}
                             </x-nav-link>
@@ -23,16 +24,15 @@
                                 {{ __('Pacientes') }}
                             </x-nav-link>
 
+                            <x-nav-link :href="route('calendario')" :active="request()->routeIs('calendario')">
+                                {{ __('Calendario') }}
+                            </x-nav-link>
+
                             <x-nav-link :href="route('usuarios')" :active="request()->routeIs('usuarios')">
                                 {{ __('Usuarios') }}
                             </x-nav-link>
-
-                            <x-nav-link :href="route('productos')" :active="request()->routeIs('productos')">
-                                {{ __('Productos') }}
-                            </x-nav-link>
-                            
+                        <!-- Doctor Navigation Links -->    
                         @elseif (auth()->user()->tipo === 'doctor')
-                            <!-- Doctor Navigation Links -->
                                 <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                                     {{ __('Dashboard') }}
                                 </x-nav-link>
@@ -41,11 +41,13 @@
                                     {{ __('Pacientes') }}
                                 </x-nav-link>
 
+                                <x-nav-link :href="route('calendario')" :active="request()->routeIs('calendario')">
+                                    {{ __('Calendario') }}
+                                </x-nav-link>
+
                                 <x-nav-link :href="route('productos')" :active="request()->routeIs('productos')">
                                     {{ __('Productos') }}
                                 </x-nav-link>
-
-                            <!-- Add more links for Doctor -->
                         @endif
                     @endauth
                 </div>

@@ -3,11 +3,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>  
 </head>
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Pacientes') }}
-        </h2>
-    </x-slot>
     
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -19,10 +14,13 @@
                             Agendar cita
                         </button>
                         <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                            Registrar Paciente
+                            Registrar
+                        </button>
+                        <button data-modal-target="editar-patient-modal" data-modal-toggle="editar-patient-modal" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+                            Editar
                         </button>
                         <button data-modal-target="eliminar-cita-modal" data-modal-toggle="eliminar-cita-modal" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                            Eliminar Paciente
+                            Eliminar
                         </button>
                     </div>
                 </div>
@@ -40,7 +38,7 @@
             @endif
             <div class="relative overflow-x-auto">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <thead class="text-xs text-white uppercase bg-gray-700 dark:bg-gray-800">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 Nombre del paciente
@@ -202,10 +200,92 @@
                     <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                 </div>
 
+                <!-- Servicio -->
+                <div class="mt-4">
+                    <x-input-label for="id_servicio_agenda" :value="__('Servicio')" />
+                    <select id="id_servicio_agenda" name="id_servicio_agenda" class="block mt-1 w-full">
+                        <option value="">Seleccione un servicio</option>
+                        @foreach($servicios as $servicio)
+                            <option value="{{ $servicio->id }}">{{ $servicio->Tipo }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('id_servicio_agenda')" class="mt-2" />
+                </div>
+
+                
+
                 <div class="flex items-center justify-end mt-4">
                     <x-primary-button class="ms-4">
                         {{ __('Registrar cita') }}
                     </x-primary-button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar pacientes -->
+<div id="editar-patient-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Editar Paciente
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="editar-patient-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form method="POST" action="" class="p-4 md:p-5" id="edit-patient-form">
+                @csrf
+                @method('PATCH')
+
+                <!-- Nombre del Paciente -->
+                <div class="mt-4">
+                    <x-input-label for="edit_id_paciente" :value="__('Nombre del Paciente')" />
+                    <select id="edit_id_paciente" name="edit_id_paciente" class="block mt-1 w-full" onchange="updateEditPatientFields()">
+                        <option value="">Seleccione un paciente</option>
+                        @foreach($pacientes as $paciente)
+                            <option value="{{ $paciente->id }}" data-nacimiento="{{ $paciente->fecha_nacimiento }}" data-sexo="{{ $paciente->genero }}" data-telefono="{{ $paciente->telefono }}">{{ $paciente->nombre_completo }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('edit_id_paciente')" class="mt-2" />
+                </div>
+
+                <!-- Fecha de Nacimiento -->
+                <div class="mt-4">
+                    <x-input-label for="edit-birthdate" :value="__('Fecha de nacimiento')" />
+                    <x-text-input id="edit-birthdate" class="block mt-1 w-full" type="date" name="birthdate" required />
+                    <x-input-error :messages="$errors->get('birthdate')" class="mt-2" />
+                </div>
+
+                <!-- Género -->
+                <div class="mt-4">
+                    <x-input-label for="edit-sex" :value="__('Género')" />
+                    <select id="edit-sex" name="sex" class="block mt-1 w-full">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
+                    <x-input-error :messages="$errors->get('sex')" class="mt-2" />
+                </div>
+
+                <!-- Teléfono -->
+                <div class="mt-4">
+                    <x-input-label for="edit-phone" :value="__('Teléfono')" />
+                    <x-text-input id="edit-phone" class="block mt-1 w-full" type="tel" name="phone" required />
+                    <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+                </div>
+
+                <div class="flex items-center justify-end mt-4">
+                    <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Guardar Cambios
+                    </button>
                 </div>
             </form>
         </div>
@@ -256,6 +336,7 @@
     </div>
 </div>
 
+<!-- Codigo JS necesario para eliminar paciente -->
 <script>
     document.getElementById('delete_patient_id').addEventListener('change', function() {
         const form = document.getElementById('delete-patient-form');
@@ -263,7 +344,7 @@
     });
 </script>
 
-
+<!-- Codigo JS necesario para cuandos se agende cita se agrege automaticamente el numero del paciente -->
 <script>
     function updatePhoneNumber() {
         const select = document.getElementById('id_paciente_agenda');
@@ -272,5 +353,26 @@
         document.getElementById('telefono').value = telefono ? telefono : '';
     }
 </script>
+
+
+<!-- Codigo JS necesario para cuando se edita un paciente se autocompleten los datos -->
+<script>
+    function updateEditPatientFields() {
+        const select = document.getElementById('edit_id_paciente');
+        const selectedOption = select.options[select.selectedIndex];
+
+        const birthdate = selectedOption.getAttribute('data-nacimiento');
+        const sex = selectedOption.getAttribute('data-sexo');
+        const phone = selectedOption.getAttribute('data-telefono');
+
+        document.getElementById('edit-birthdate').value = birthdate ? birthdate : '';
+        document.getElementById('edit-sex').value = sex ? sex : '';
+        document.getElementById('edit-phone').value = phone ? phone : '';
+        
+        const form = document.getElementById('edit-patient-form');
+        form.action = "{{ url('/patients') }}/" + selectedOption.value;
+    }
+</script>
+
 
 </x-app-layout>

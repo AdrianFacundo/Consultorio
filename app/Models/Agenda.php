@@ -1,5 +1,4 @@
 <?php
-// app/Models/Agenda.php
 
 namespace App\Models;
 
@@ -12,8 +11,20 @@ class Agenda extends Model
 
     protected $fillable = [
         'id_paciente_agenda',
+        'id_servicio_agenda',
         'fecha',
         'hora',
         'telefono',
+        'atendida',
     ];
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'id_paciente_agenda');
+    }
+
+    public function servicio()
+    {
+        return $this->belongsTo(Servicio::class, 'id_servicio_agenda');
+    }
 }

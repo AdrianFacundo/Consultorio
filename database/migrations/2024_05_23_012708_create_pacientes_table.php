@@ -18,6 +18,7 @@ class CreatePacientesTable extends Migration
             $table->date('fecha_nacimiento');
             $table->string('telefono', 255);
             $table->enum('genero', ['Masculino', 'Femenino']); // Definir los valores permitidos
+            //table->foreignId('id_usuario_paciente')->constrained('users');
             $table->timestamps(); // This creates `created_at` and `updated_at` columns
         });
     }

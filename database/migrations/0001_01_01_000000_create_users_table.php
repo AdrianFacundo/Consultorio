@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('tipo', ['secretaria', 'doctor'])->nullable();
+            $table->enum('tipo', ['secretaria', 'doctor', 'paciente'])->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -38,19 +38,26 @@ return new class extends Migration {
             $table->integer('last_activity')->index();
         });
 
-        // Crear dos usuarios iniciales
+        // Aqui se encarga de crear dos usuarios en la BD sin necesidad de SEEDER
         $secretaria = User::create([
-            'name' => 'Nuria',
+            'name' => 'Nuria Rivera',
             'email' => 'nuria@upv.com',
             'password' => Hash::make('12345678'),
             'tipo' => 'secretaria',
         ]);
 
         $doctor = User::create([
-            'name' => 'Adrian',
+            'name' => 'Adrian Perez',
             'email' => 'adrian@upv.com',
             'password' => Hash::make('12345678'),
             'tipo' => 'doctor',
+        ]);
+
+        $paciente = User::create([
+            'name' => 'Andrea Perez',
+            'email' => 'andrea@upv.com',
+            'password' => Hash::make('12345678'),
+            'tipo' => 'paciente',
         ]);
     }
 

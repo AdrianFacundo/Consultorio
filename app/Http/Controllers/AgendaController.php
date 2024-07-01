@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Agenda;
 use App\Models\Patient;
+use App\Models\Servicio;
 
 class AgendaController extends Controller
 {
@@ -14,28 +15,39 @@ class AgendaController extends Controller
             return view('secretaria.pacientes', compact('pacientes'));
         } elseif (auth()->user()->tipo === 'doctor') {
             $pacientes = Patient::all();
-            return view('doctor.pacientes', compact('pacientes'));
+            $servicios = Servicio::all();
+            return view('doctor.pacientes', compact('pacientes','servicios'));
         }
     }
 
     public function store(Request $request)
     {
-        // Validar los datos
-        $validated = $request->validate([
-            'id_paciente_agenda' => 'required|exists:pacientes,id',
+        $request->validate([
+            'id_paciente_agenda' => 'required',
+            'id_servicio_agenda' => 'required', // Validar el servicio
             'fecha' => 'required|date',
-            'hora' => 'required|string|max:5',
-            'telefono' => 'nullable|string|max:20',
+            'hora' => 'required',
+            'telefono' => 'required',
         ]);
 
-        // Crear una nueva agenda con el campo atendida establecido en 0
         Agenda::create([
-            'id_paciente_agenda' => $validated['id_paciente_agenda'],
-            'fecha' => $validated['fecha'],
-            'hora' => $validated['hora'],
-            'telefono' => $validated['telefono'],
+            'id_paciente_agenda' => $request->id_paciente_agenda,
+            'id_servicio_agenda' => $request->id_servicio_agenda, // Guardar el servicio
+            'fecha' => $request->fecha,
+            'hora' => $request->hora,
+            'telefono' => $request->telefono,
+            'atendida' => false,
         ]);
 
-        return redirect()->route('agendas.create')->with('success', 'Cita registrada correctamente');
+        return redirect()->route('agendas.create')->with('success', 'Cita agendada correctamente');
+    }
+
+    public function atendida($id)
+    {
+        $agenda = Agenda::findOrFail($id);
+        $agenda->atendida = 1;
+        $agenda->save();
+
+        return redirect()->route('dashboard')->with('success', 'Cita marcada como atendida.');
     }
 }
